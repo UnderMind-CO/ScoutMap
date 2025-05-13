@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- Chest body (base) - smaller version -->
+  <rect x="2" y="6" width="12" height="8" fill="#8B4513" stroke="#000" stroke-width="0.5" />
+  
+  <!-- Chest bottom shadow -->
+  <rect x="2" y="12" width="12" height="2" fill="#5E2605" stroke="#000" stroke-width="0.5" />
+  
+  <!-- Chest top (lid) open -->
+  <path d="M2,6 L3.5,3 L12.5,3 L14,6" fill="#A0522D" stroke="#000" stroke-width="0.5" />
+  
+  <!-- Chest top (lid) decoration -->
+  <rect x="3.5" y="3" width="9" height="1" fill="#CD853F" stroke="#000" stroke-width="0.5" />
+  
+  <!-- Metal locks and hinges -->
+  <rect x="7" y="7" width="2" height="2" fill="#FFD700" stroke="#000" stroke-width="0.3" />
+  
+  <!-- Gold/treasure - simplified for small icon -->
+  <circle cx="8" cy="10" r="1.5" fill="#FFD700" stroke="#000" stroke-width="0.3" />
+
+  <!-- Glow effect -->
+  <circle cx="8" cy="9" r="6" fill="#FFFF00" opacity="0.2" />
+</svg>

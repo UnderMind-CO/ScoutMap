@@ -1,0 +1,70 @@
+# Guía de instalación y uso de ScoutMap para TurtleWOW
+
+## Descripción
+ScoutMap es un addon para TurtleWOW que muestra la ubicación de los cofres del tesoro en el mapa del mundo y en el minimapa. Permite rastrear qué cofres has encontrado y cuáles aún te quedan por descubrir.
+
+## Instalación
+
+1. Descarga los archivos del addon
+2. Crea una carpeta llamada "ScoutMap" dentro de la carpeta "Interface/AddOns" de tu cliente TurtleWOW
+3. Coloca los siguientes archivos en la carpeta "ScoutMap":
+   - TreasureMap.toc
+   - TreasureMap.lua
+   - ChestFound.tga (debes crearla - un icono de cofre abierto)
+   - ChestNotFound.tga (debes crearla - un icono de cofre cerrado)
+   - MiniChestFound.tga (versión más pequeña del icono de cofre abierto)
+   - MiniChestNotFound.tga (versión más pequeña del icono de cofre cerrado)
+   - MinimapButton.tga (icono para el botón del minimapa)
+4. Inicia o reinicia TurtleWOW para cargar el addon
+
+## Uso
+
+### Comandos
+El addon responde a los siguientes comandos:
+- `/tm` o `/treasuremap` - Abre el panel de opciones
+- `/tm worldmap` - Activa/desactiva los iconos en el mapa del mundo
+- `/tm minimap` - Activa/desactiva los iconos en el minimapa
+- `/tm reset` - Reinicia la base de datos (elimina el registro de cofres encontrados)
+
+### Botón del minimapa
+El addon añade un botón al borde del minimapa que permite:
+- Clic izquierdo: Abrir el panel de opciones
+- Clic derecho: Activar/desactivar los iconos del minimapa
+- Mayús + clic izquierdo: Activar/desactivar los iconos del mapa del mundo
+- Arrastrar: Mover el botón alrededor del minimapa
+
+### Iconos de cofres
+- En el mapa del mundo aparecen iconos de cofres que puedes hacer clic para marcarlos como encontrados
+- En el minimapa aparecen iconos de cofres cercanos a tu ubicación
+- Los cofres encontrados y no encontrados tienen iconos diferentes para facilitar su identificación
+
+### Panel de opciones
+El panel de opciones permite:
+- Activar/desactivar los iconos en el mapa del mundo
+- Activar/desactivar los iconos en el minimapa
+- Reiniciar la base de datos de cofres encontrados
+
+## Notas
+- El addon viene preconfigurado con ubicaciones de cofres en las zonas iniciales
+- Las ubicaciones de los cofres son aproximadas y pueden variar ligeramente en el juego
+- Si encuentras un cofre que no está en el mapa, puedes contribuir a la base de datos contactando al autor
+
+## Personalización
+Para añadir o modificar ubicaciones de cofres, edita la tabla `treasureDB` en el archivo TreasureMap.lua.
+El formato es:
+```lua
+[ID_ZONA] = {
+    {coordenada_X, coordenada_Y, "Nombre del cofre", tiempo_respawn},
+    -- más cofres...
+}
+```
+
+## Solución de problemas
+Si los iconos no aparecen:
+1. Verifica que el addon esté correctamente instalado y activado
+2. Comprueba que los iconos estén activados en el panel de opciones
+3. Asegúrate de estar en una zona que tenga cofres configurados en la base de datos
+Tip: Si continuas obtenido problemas contáctame por DC: nevermind_2905 o https://github.com/UnderMind-CO
+
+## Créditos
+Desarrollado por nevermind_2905 para TurtleWOW.
