@@ -8,7 +8,7 @@ if not addonName then addonName = "ScoutMap" end
 
 ScoutMap = {}
 local SM = ScoutMap
-SM.version = "1.0"
+SM.version = "1.0.1"
 SM.chests = {}
 SM.pins = {}
 SM.miniPins = {}
@@ -18,7 +18,7 @@ SM.minimapButtonPosition = 45 -- degrees
 
 -- Database of known chest locations
 -- Format: [zoneID] = { {x, y, name, respawnTime}, ... }
-local treasureDB = {
+local ScoutMapDB = {
     -- Elwynn Forest (ID: 1429)
     [1429] = {
         {32.3, 53.4, "Elwynn Forest Treasure Chest", 600},
@@ -161,7 +161,7 @@ function SM:Initialize()
     self.minimapButtonPosition = ScoutMapDB.minimapButtonPosition
     
     -- Load chest database
-    for zoneID, chests in pairs(treasureDB) do
+    for zoneID, chests in pairs(ScoutMapDB) do
         if not self.chests[zoneID] then
             self.chests[zoneID] = {}
         end
