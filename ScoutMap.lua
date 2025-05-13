@@ -1,20 +1,20 @@
 --[[ 
-TreasureMap - A WoW Classic addon for TurtleWOW that shows treasure chests on the world map and minimap
+ScoutMap - A WoW Classic addon for TurtleWOW that shows treasure chests on the world map and minimap
 ]]
 
 -- Initialize addon and local variables
 local addonName, addon = ...
-if not addonName then addonName = "TreasureMap" end
+if not addonName then addonName = "ScoutMap" end
 
-TreasureMap = {}
-local TM = TreasureMap
-TM.version = "1.0"
-TM.chests = {}
-TM.pins = {}
-TM.miniPins = {}
-TM.showOnWorldMap = true
-TM.showOnMinimap = true
-TM.minimapButtonPosition = 45 -- degrees
+ScoutMap = {}
+local SM = ScoutMap
+SM.version = "1.0"
+SM.chests = {}
+SM.pins = {}
+SM.miniPins = {}
+SM.showOnWorldMap = true
+SM.showOnMinimap = true
+SM.minimapButtonPosition = 45 -- degrees
 
 -- Database of known chest locations
 -- Format: [zoneID] = { {x, y, name, respawnTime}, ... }
@@ -102,52 +102,52 @@ end
 local function SlashCommandHandler(msg)
     if not msg or msg == "" then
         -- Toggle visibility of the configuration window
-        if TM.optionsFrame and TM.optionsFrame:IsVisible() then
-            TM.optionsFrame:Hide()
+        if SM.optionsFrame and SM.optionsFrame:IsVisible() then
+            SM.optionsFrame:Hide()
         else
-            TM:ShowOptions()
+            SM:ShowOptions()
         end
     elseif msg == "worldmap" then
-        TM.showOnWorldMap = not TM.showOnWorldMap
-        TM:Print("World map icons " .. (TM.showOnWorldMap and "enabled" or "disabled"))
+        SM.showOnWorldMap = not SM.showOnWorldMap
+        SM:Print("World map icons " .. (SM.showOnWorldMap and "enabled" or "disabled"))
         if WorldMapFrame:IsVisible() then
-            TM:RefreshWorldMapIcons()
+            SM:RefreshWorldMapIcons()
         end
     elseif msg == "minimap" then
-        TM.showOnMinimap = not TM.showOnMinimap
-        TM:Print("Minimap icons " .. (TM.showOnMinimap and "enabled" or "disabled"))
-        TM:RefreshMinimapIcons()
+        SM.showOnMinimap = not SM.showOnMinimap
+        SM:Print("Minimap icons " .. (SM.showOnMinimap and "enabled" or "disabled"))
+        SM:RefreshMinimapIcons()
     elseif msg == "reset" then
-        TM:ResetDB()
-        TM:Print("Database has been reset.")
+        SM:ResetDB()
+        SM:Print("Database has been reset.")
     else
-        TM:Print("TreasureMap commands:")
-        TM:Print("  /tm - Toggle configuration")
-        TM:Print("  /tm worldmap - Toggle world map icons")
-        TM:Print("  /tm minimap - Toggle minimap icons")
-        TM:Print("  /tm reset - Reset database")
+        SM:Print("ScoutMap commands:")
+        SM:Print("  /sm - Toggle configuration")
+        SM:Print("  /sm worldmap - Toggle world map icons")
+        SM:Print("  /sm minimap - Toggle minimap icons")
+        SM:Print("  /sm reset - Reset database")
     end
 end
 
 -- Slash Commands Registration
-function TM:RegisterSlashCommands()
-    SLASH_TREASUREMAP1 = "/treasuremap"
-    SLASH_TREASUREMAP2 = "/tm"
-    SlashCmdList["TREASUREMAP"] = SlashCommandHandler
+function SM:RegisterSlashCommands()
+    SLASH_SCOUTMAP1 = "/scoutmap"
+    SLASH_SCOUTMAP2 = "/sm"
+    SlashCmdList["SCOUTMAP"] = SlashCommandHandler
 end
 
 -- Print function for debug and user messages
-function TM:Print(msg)
+function SM:Print(msg)
     if msg then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00TreasureMap:|r " .. msg)
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00ScoutMap:|r " .. msg)
     end
 end
 
 -- Function to initialize the addon
-function TM:Initialize()
+function SM:Initialize()
     -- Initialize the saved variables if they don't exist
-    if not TreasureMapDB then
-        TreasureMapDB = {
+    if not ScoutMapDB then
+        ScoutMapDB = {
             showOnWorldMap = true,
             showOnMinimap = true,
             minimapButtonPosition = 45,
@@ -156,9 +156,9 @@ function TM:Initialize()
     end
     
     -- Load settings from saved variables
-    self.showOnWorldMap = TreasureMapDB.showOnWorldMap
-    self.showOnMinimap = TreasureMapDB.showOnMinimap
-    self.minimapButtonPosition = TreasureMapDB.minimapButtonPosition
+    self.showOnWorldMap = ScoutMapDB.showOnWorldMap
+    self.showOnMinimap = ScoutMapDB.showOnMinimap
+    self.minimapButtonPosition = ScoutMapDB.minimapButtonPosition
     
     -- Load chest database
     for zoneID, chests in pairs(treasureDB) do
@@ -172,7 +172,7 @@ function TM:Initialize()
                 y = chest[2], 
                 name = chest[3], 
                 respawnTime = chest[4],
-                found = TreasureMapDB.foundChests[zoneID .. ":" .. chest[1] .. ":" .. chest[2]] or false
+                found = ScoutMapDB.foundChests[zoneID .. ":" .. chest[1] .. ":" .. chest[2]] or false
             })
         end
     end
@@ -187,11 +187,11 @@ function TM:Initialize()
     self:CreateMinimapButton()
     
     -- Print initialization message
-    self:Print("v" .. self.version .. " loaded. Type /tm for options.")
+    self:Print("v" .. self.version .. " loaded. Type /SM for options.")
 end
 
 -- Register Event Handlers
-function TM:RegisterEvents()
+function SM:RegisterEvents()
     -- Create a frame for handling events
     self.eventFrame = CreateFrame("Frame")
     self.eventFrame:RegisterEvent("ADDON_LOADED")
@@ -199,28 +199,28 @@ function TM:RegisterEvents()
     self.eventFrame:RegisterEvent("WORLD_MAP_UPDATE")
     self.eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
     
-    self.eventFrame:SetScript("OnEvent", function()
+    self.eventFrame:SetScript("OnEvent", function(self, event, arg1)
         if event == "ADDON_LOADED" and arg1 == addonName then
-            TM:Initialize()
+            SM:Initialize()
         elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
-            TM:RefreshMinimapIcons()
+            SM:RefreshMinimapIcons()
         elseif event == "WORLD_MAP_UPDATE" then
-            TM:RefreshWorldMapIcons()
+            SM:RefreshWorldMapIcons()
         end
     end)
 end
 
 -- Create a button for the minimap
-function TM:CreateMinimapButton()
+function SM:CreateMinimapButton()
     -- Create minimap button frame
-    local button = CreateFrame("Button", "TreasureMapMinimapButton", Minimap)
+    local button = CreateFrame("Button", "ScoutMapMinimapButton", Minimap)
     button:SetWidth(32)
     button:SetHeight(32)
     button:SetFrameStrata("MEDIUM")
     button:SetMovable(true)
     
     -- Set button texture
-    button:SetNormalTexture("Interface\\AddOns\\TreasureMap\\MinimapButton")
+    button:SetNormalTexture("Interface\\AddOns\\ScoutMap\\MinimapButton")
     button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
     
     -- Position the button around the minimap
@@ -248,8 +248,8 @@ function TM:CreateMinimapButton()
         if angle < 0 then angle = angle + 360 end
         
         -- Save position
-        TM.minimapButtonPosition = angle
-        TreasureMapDB.minimapButtonPosition = angle
+        SM.minimapButtonPosition = angle
+        ScoutMapDB.minimapButtonPosition = angle
         
         -- Update position
         local radius = 80
@@ -259,7 +259,7 @@ function TM:CreateMinimapButton()
     -- Set up tooltip
     button:SetScript("OnEnter", function()
         GameTooltip:SetOwner(button, "ANCHOR_LEFT")
-        GameTooltip:AddLine("TreasureMap")
+        GameTooltip:AddLine("ScoutMap")
         GameTooltip:AddLine("Left-click: Toggle options", 1, 1, 1)
         GameTooltip:AddLine("Right-click: Toggle minimap icons", 1, 1, 1)
         GameTooltip:AddLine("Shift+click: Toggle world map icons", 1, 1, 1)
@@ -272,27 +272,27 @@ function TM:CreateMinimapButton()
     
     -- Set button click handlers
     button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-    button:SetScript("OnClick", function()
-        if arg1 == "LeftButton" then
+    button:SetScript("OnClick", function(self, button, down)
+        if button == "LeftButton" then
             if IsShiftKeyDown() then
-                TM.showOnWorldMap = not TM.showOnWorldMap
-                TreasureMapDB.showOnWorldMap = TM.showOnWorldMap
-                TM:Print("World map icons " .. (TM.showOnWorldMap and "enabled" or "disabled"))
+                SM.showOnWorldMap = not SM.showOnWorldMap
+                ScoutMapDB.showOnWorldMap = SM.showOnWorldMap
+                SM:Print("World map icons " .. (SM.showOnWorldMap and "enabled" or "disabled"))
                 if WorldMapFrame:IsVisible() then
-                    TM:RefreshWorldMapIcons()
+                    SM:RefreshWorldMapIcons()
                 end
             else
-                if TM.optionsFrame and TM.optionsFrame:IsVisible() then
-                    TM.optionsFrame:Hide()
+                if SM.optionsFrame and SM.optionsFrame:IsVisible() then
+                    SM.optionsFrame:Hide()
                 else
-                    TM:ShowOptions()
+                    SM:ShowOptions()
                 end
             end
-        elseif arg1 == "RightButton" then
-            TM.showOnMinimap = not TM.showOnMinimap
-            TreasureMapDB.showOnMinimap = TM.showOnMinimap
-            TM:Print("Minimap icons " .. (TM.showOnMinimap and "enabled" or "disabled"))
-            TM:RefreshMinimapIcons()
+        elseif button == "RightButton" then
+            SM.showOnMinimap = not SM.showOnMinimap
+            ScoutMapDB.showOnMinimap = SM.showOnMinimap
+            SM:Print("Minimap icons " .. (SM.showOnMinimap and "enabled" or "disabled"))
+            SM:RefreshMinimapIcons()
         end
     end)
     
@@ -300,8 +300,8 @@ function TM:CreateMinimapButton()
 end
 
 -- Function to reset the database to default values
-function TM:ResetDB()
-    TreasureMapDB = {
+function SM:ResetDB()
+    ScoutMapDB = {
         showOnWorldMap = true,
         showOnMinimap = true,
         minimapButtonPosition = 45,
@@ -309,9 +309,9 @@ function TM:ResetDB()
     }
     
     -- Reload settings
-    self.showOnWorldMap = TreasureMapDB.showOnWorldMap
-    self.showOnMinimap = TreasureMapDB.showOnMinimap
-    self.minimapButtonPosition = TreasureMapDB.minimapButtonPosition
+    self.showOnWorldMap = ScoutMapDB.showOnWorldMap
+    self.showOnMinimap = ScoutMapDB.showOnMinimap
+    self.minimapButtonPosition = ScoutMapDB.minimapButtonPosition
     
     -- Reset found status on chest database
     for zoneID, chests in pairs(self.chests) do
@@ -326,10 +326,10 @@ function TM:ResetDB()
 end
 
 -- Function to create or show the options window
-function TM:ShowOptions()
+function SM:ShowOptions()
     if not self.optionsFrame then
         -- Create the options window
-        local frame = CreateFrame("Frame", "TreasureMapOptions", UIParent)
+        local frame = CreateFrame("Frame", "ScoutMapOptions", UIParent)
         frame:SetWidth(300)
         frame:SetHeight(200)
         frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
@@ -350,55 +350,55 @@ function TM:ShowOptions()
         -- Title
         local title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
         title:SetPoint("TOP", frame, "TOP", 0, -20)
-        title:SetText("TreasureMap Options")
+        title:SetText("ScoutMap Options")
         
         -- World Map Checkbox
-        local worldMapCheckbox = CreateFrame("CheckButton", "TreasureMapWorldMapCheckbox", frame, "UICheckButtonTemplate")
+        local worldMapCheckbox = CreateFrame("CheckButton", "ScoutMapWorldMapCheckbox", frame, "UICheckButtonTemplate")
         worldMapCheckbox:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -50)
         worldMapCheckbox:SetChecked(self.showOnWorldMap)
         getglobal(worldMapCheckbox:GetName() .. "Text"):SetText("Show on World Map")
         worldMapCheckbox:SetScript("OnClick", function()
-            TM.showOnWorldMap = worldMapCheckbox:GetChecked()
-            TreasureMapDB.showOnWorldMap = TM.showOnWorldMap
-            TM:RefreshWorldMapIcons()
+            SM.showOnWorldMap = worldMapCheckbox:GetChecked()
+            ScoutMapDB.showOnWorldMap = SM.showOnWorldMap
+            SM:RefreshWorldMapIcons()
         end)
         
         -- Minimap Checkbox
-        local minimapCheckbox = CreateFrame("CheckButton", "TreasureMapMinimapCheckbox", frame, "UICheckButtonTemplate")
+        local minimapCheckbox = CreateFrame("CheckButton", "ScoutMapMinimapCheckbox", frame, "UICheckButtonTemplate")
         minimapCheckbox:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -80)
         minimapCheckbox:SetChecked(self.showOnMinimap)
         getglobal(minimapCheckbox:GetName() .. "Text"):SetText("Show on Minimap")
         minimapCheckbox:SetScript("OnClick", function()
-            TM.showOnMinimap = minimapCheckbox:GetChecked()
-            TreasureMapDB.showOnMinimap = TM.showOnMinimap
-            TM:RefreshMinimapIcons()
+            SM.showOnMinimap = minimapCheckbox:GetChecked()
+            ScoutMapDB.showOnMinimap = SM.showOnMinimap
+            SM:RefreshMinimapIcons()
         end)
         
         -- Reset Button
-        local resetButton = CreateFrame("Button", "TreasureMapResetButton", frame, "UIPanelButtonTemplate")
+        local resetButton = CreateFrame("Button", "ScoutMapResetButton", frame, "UIPanelButtonTemplate")
         resetButton:SetWidth(100)
         resetButton:SetHeight(25)
         resetButton:SetPoint("BOTTOM", frame, "BOTTOM", 0, 20)
         resetButton:SetText("Reset Data")
         resetButton:SetScript("OnClick", function()
-            StaticPopupDialogs["TREASUREMAP_RESET"] = {
-                text = "Are you sure you want to reset your TreasureMap data?",
+            StaticPopupDialogs["SCOUTMAP_RESET"] = {
+                text = "Are you sure you want to reset your ScoutMap data?",
                 button1 = "Yes",
                 button2 = "No",
                 OnAccept = function()
-                    TM:ResetDB()
-                    worldMapCheckbox:SetChecked(TM.showOnWorldMap)
-                    minimapCheckbox:SetChecked(TM.showOnMinimap)
+                    SM:ResetDB()
+                    worldMapCheckbox:SetChecked(SM.showOnWorldMap)
+                    minimapCheckbox:SetChecked(SM.showOnMinimap)
                 end,
                 timeout = 0,
                 whileDead = true,
                 hideOnEscape = true
             }
-            StaticPopup_Show("TREASUREMAP_RESET")
+            StaticPopup_Show("SCOUTMAP_RESET")
         end)
         
         -- Close Button
-        local closeButton = CreateFrame("Button", "TreasureMapCloseButton", frame, "UIPanelCloseButton")
+        local closeButton = CreateFrame("Button", "ScoutMapCloseButton", frame, "UIPanelCloseButton")
         closeButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
         
         self.optionsFrame = frame
@@ -408,11 +408,11 @@ function TM:ShowOptions()
 end
 
 -- Function to create World Map Icons
-function TM:CreateWorldMapIcon(index, x, y, name, found)
-    local pin = getglobal("TreasureMapPin" .. index)
+function SM:CreateWorldMapIcon(index, x, y, name, found)
+    local pin = getglobal("ScoutMapPin" .. index)
     
     if not pin then
-        pin = CreateFrame("Button", "TreasureMapPin" .. index, WorldMapFrame)
+        pin = CreateFrame("Button", "ScoutMapPin" .. index, WorldMapFrame)
         pin:SetWidth(16)
         pin:SetHeight(16)
         pin:SetFrameLevel(WorldMapFrame:GetFrameLevel() + 5)
@@ -435,10 +435,10 @@ function TM:CreateWorldMapIcon(index, x, y, name, found)
             
             -- Update database
             local key = pin.zoneID .. ":" .. pin.x .. ":" .. pin.y
-            TreasureMapDB.foundChests[key] = pin.found
+            ScoutMapDB.foundChests[key] = pin.found
             
             -- Update chest in memory
-            for _, chest in ipairs(TM.chests[pin.zoneID]) do
+            for _, chest in ipairs(SM.chests[pin.zoneID]) do
                 if chest.x == pin.x and chest.y == pin.y then
                     chest.found = pin.found
                     break
@@ -447,9 +447,9 @@ function TM:CreateWorldMapIcon(index, x, y, name, found)
             
             -- Update icon
             if pin.found then
-                pin:SetNormalTexture("Interface\\AddOns\\TreasureMap\\ChestFound")
+                pin:SetNormalTexture("Interface\\AddOns\\ScoutMap\\ChestFound")
             else
-                pin:SetNormalTexture("Interface\\AddOns\\TreasureMap\\ChestNotFound")
+                pin:SetNormalTexture("Interface\\AddOns\\ScoutMap\\ChestNotFound")
             end
             
             -- Update tooltip
@@ -459,7 +459,7 @@ function TM:CreateWorldMapIcon(index, x, y, name, found)
             GameTooltip:Show()
             
             -- Refresh minimap icons
-            TM:RefreshMinimapIcons()
+            SM:RefreshMinimapIcons()
         end)
     end
     
@@ -479,9 +479,9 @@ function TM:CreateWorldMapIcon(index, x, y, name, found)
     
     -- Set appearance based on found status
     if found then
-        pin:SetNormalTexture("Interface\\AddOns\\TreasureMap\\ChestFound")
+        pin:SetNormalTexture("Interface\\AddOns\\ScoutMap\\ChestFound")
     else
-        pin:SetNormalTexture("Interface\\AddOns\\TreasureMap\\ChestNotFound")
+        pin:SetNormalTexture("Interface\\AddOns\\ScoutMap\\ChestNotFound")
     end
     
     pin:Show()
@@ -489,7 +489,7 @@ function TM:CreateWorldMapIcon(index, x, y, name, found)
 end
 
 -- Function to refresh World Map Icons
-function TM:RefreshWorldMapIcons()
+function SM:RefreshWorldMapIcons()
     -- Hide all existing pins
     for _, pin in pairs(self.pins) do
         pin:Hide()
@@ -516,11 +516,11 @@ function TM:RefreshWorldMapIcons()
 end
 
 -- Function to create Minimap Icons
-function TM:CreateMinimapIcon(index, x, y, name, found)
-    local pin = getglobal("TreasureMapMiniPin" .. index)
+function SM:CreateMinimapIcon(index, x, y, name, found)
+    local pin = getglobal("ScoutMapMiniPin" .. index)
     
     if not pin then
-        pin = CreateFrame("Button", "TreasureMapMiniPin" .. index, Minimap)
+        pin = CreateFrame("Button", "ScoutMapMiniPin" .. index, Minimap)
         pin:SetWidth(12)
         pin:SetHeight(12)
         pin:SetFrameLevel(Minimap:GetFrameLevel() + 5)
@@ -568,9 +568,9 @@ function TM:CreateMinimapIcon(index, x, y, name, found)
     
     -- Set appearance based on found status
     if found then
-        pin:SetNormalTexture("Interface\\AddOns\\TreasureMap\\MiniChestFound")
+        pin:SetNormalTexture("Interface\\AddOns\\ScoutMap\\MiniChestFound")
     else
-        pin:SetNormalTexture("Interface\\AddOns\\TreasureMap\\MiniChestNotFound")
+        pin:SetNormalTexture("Interface\\AddOns\\ScoutMap\\MiniChestNotFound")
     end
     
     -- Check if the pin is within minimap bounds
@@ -585,7 +585,7 @@ function TM:CreateMinimapIcon(index, x, y, name, found)
 end
 
 -- Function to refresh Minimap Icons
-function TM:RefreshMinimapIcons()
+function SM:RefreshMinimapIcons()
     -- Hide all existing pins
     for _, pin in pairs(self.miniPins) do
         pin:Hide()
@@ -628,7 +628,7 @@ local timeSinceLastUpdate = 0
 local function OnUpdate(self, elapsed)
     timeSinceLastUpdate = timeSinceLastUpdate + elapsed
     if timeSinceLastUpdate >= updateInterval then
-        TM:RefreshMinimapIcons()
+        SM:RefreshMinimapIcons()
         timeSinceLastUpdate = 0
     end
 end
@@ -639,5 +639,5 @@ updateFrame:SetScript("OnUpdate", OnUpdate)
 
 -- Initialize if ADDON_LOADED has already fired
 if IsAddOnLoaded(addonName) then
-    TM:Initialize()
+    SM:Initialize()
 end
