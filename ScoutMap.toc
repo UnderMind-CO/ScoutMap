@@ -1,8 +1,8 @@
 ## Interface: 11200
 ## Title: ScoutMap
-## Notes: Displays treasure chests on the world map and minimap
-## Author: NeverMind_Co (nevermind_2905)
-## Version: 1.0
+## Notes: Displays treasure chests on the world map and minimap By nevermind_2905.
+## Author: NeverMind_Co
+## Version: 1.0.1
 ## SavedVariables: ScoutMapDB
 
 ScoutMap.lua
